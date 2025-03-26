@@ -24,6 +24,8 @@ public partial class NovoProduto : ContentPage
 
 			await DisplayAlert("Sucesso", "Registro Inserido", "Ok");
 
+			await Navigation.PopAsync();
+
 		} catch(Exception ex)
 		{
 			await DisplayAlert("Ops", ex.Message, "Ok");
