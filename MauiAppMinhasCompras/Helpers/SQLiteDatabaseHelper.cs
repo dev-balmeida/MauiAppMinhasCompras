@@ -19,9 +19,9 @@ namespace MauiAppMinhasCompras.Helpers
 
         public Task<List<Produto>> Update(Produto p) 
         {
-            string sql = "UPDATE Produto SET Descricao =?, Quantidade =?, Preco =? WHERE Id =?";
+            string sql = "UPDATE Produto SET Descricao =?, Quantidade =?, Preco =?, Categoria =? WHERE Id =?";
             
-            return _conn.QueryAsync<Produto>(sql, p.Descricao, p.Quantidade, p.Preco, p.Id);
+            return _conn.QueryAsync<Produto>(sql, p.Descricao, p.Quantidade, p.Preco, p.Categoria, p.Id);
         }
 
         public Task<int> Delete(int id) 
@@ -39,6 +39,24 @@ namespace MauiAppMinhasCompras.Helpers
             string sql = "SELECT * FROM Produto WHERE Descricao LIKE '%" + q + "%'";
 
             return _conn.QueryAsync<Produto>(sql);
+        }
+
+        public Task<List<Produto>> GetProdutosPorCategoria(string categoria)
+        {
+            string sql = "SELECT * FROM Produto WHERE Categoria = ?";
+            return _conn.QueryAsync<Produto>(sql, categoria);
+        }
+
+        public Task<List<dynamic>> RelatorioPorCategoria()
+        {
+            string sql = @"
+                SELECT Categoria, SUM(Quantidade * Preco) AS TotalGasto
+                FROM Produto
+                GROUP BY Categoria
+                ORDER BY TotalGasto DESC
+            ";
+
+            return _conn.QueryAsync<dynamic>(sql);
         }
 
     }

@@ -130,4 +130,49 @@ public partial class ListaProduto : ContentPage
             lst_produtos.IsRefreshing = false;
         }
     }
+    private async void PickerCategoria_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        try
+        {
+            string categoriaSelecionada = pickerCategoria.SelectedItem.ToString();
+
+            lista.Clear();
+
+            List<Produto> produtosFiltrados = await App.Db.GetProdutosPorCategoria(categoriaSelecionada);
+            produtosFiltrados.ForEach(i => lista.Add(i));
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Ops", ex.Message, "Ok");
+        }
+    }
+
+    private void SomarPorCategoria_Clicked(object sender, EventArgs e)
+    {
+        try
+        {
+            if (pickerCategoria.SelectedItem == null)
+            {
+                DisplayAlert("Erro", "Por favor, selecione uma categoria primeiro.", "OK");
+                return;
+            }
+
+            string categoriaSelecionada = pickerCategoria.SelectedItem.ToString();
+
+            var produtosFiltrados = lista.Where(i => i.Categoria == categoriaSelecionada).ToList();
+
+            double soma = produtosFiltrados.Sum(i => i.Total);
+
+            string msg = produtosFiltrados.Count > 0
+                ? $"O total da categoria {categoriaSelecionada} é {soma:C}"
+                : "Nenhum produto encontrado nesta categoria.";
+
+            DisplayAlert("Total por Categoria", msg, "OK");
+        }
+        catch (Exception ex)
+        {
+            DisplayAlert("Ops", ex.Message, "OK");
+        }
+    }
+
 }
